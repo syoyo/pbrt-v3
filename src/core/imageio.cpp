@@ -37,8 +37,10 @@
 #include "fileutil.h"
 #include "spectrum.h"
 
+#ifdef USE_OPENEXR
 #include <ImfRgba.h>
 #include <ImfRgbaFile.h>
+#endif
 
 namespace pbrt {
 
@@ -123,6 +125,7 @@ void WriteImage(const std::string &name, const Float *rgb,
 
 RGBSpectrum *ReadImageEXR(const std::string &name, int *width, int *height,
                           Bounds2i *dataWindow, Bounds2i *displayWindow) {
+#ifdef USE_OPENEXR
     using namespace Imf;
     using namespace Imath;
     try {
@@ -157,6 +160,9 @@ RGBSpectrum *ReadImageEXR(const std::string &name, int *width, int *height,
     } catch (const std::exception &e) {
         Error("Unable to read image file \"%s\": %s", name.c_str(), e.what());
     }
+#else
+    // TODO(syoyo)
+#endif
 
     return NULL;
 }
@@ -164,6 +170,7 @@ RGBSpectrum *ReadImageEXR(const std::string &name, int *width, int *height,
 static void WriteImageEXR(const std::string &name, const Float *pixels,
                           int xRes, int yRes, int totalXRes, int totalYRes,
                           int xOffset, int yOffset) {
+#ifdef USE_OPENEXR
     using namespace Imf;
     using namespace Imath;
 
@@ -186,6 +193,9 @@ static void WriteImageEXR(const std::string &name, const Float *pixels,
     }
 
     delete[] hrgba;
+#else
+
+#endif
 }
 
 // TGA Function Definitions

@@ -18,33 +18,6 @@ if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     "MinSizeRel" "RelWithDebInfo")
 endif()
 
-if(NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/ext/openexr/OpenEXR")
-  message(FATAL_ERROR "The OpenEXR submodule directory is missing! "
-    "You probably did not clone the project with --recursive. It is possible to recover "
-    "by running \"git submodule update --init --recursive\"")
-endif()
-
-if(NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/ext/glog/cmake")
-  message(FATAL_ERROR "The glog submodule directory is missing! "
-    "You probably did not clone the project with --recursive, or first checked out "
-    "pbrt before it was added. It is possible to recover by running "
-    "\"git submodule update --init --recursive\"")
-endif()
-
-if(NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/ext/ptex/src")
-  message(FATAL_ERROR "The ptex submodule directory is missing! "
-    "You probably did not clone the project with --recursive, or first checked out "
-    "pbrt before it was added. It is possible to recover by running "
-    "\"git submodule update --init --recursive\"")
-endif()
-
-if(NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/ext/zlib/doc")
-  message(FATAL_ERROR "The zlib submodule directory is missing! "
-    "You probably did not clone the project with --recursive, or first checked out "
-    "pbrt before it was added. It is possible to recover by running "
-    "\"git submodule update --init --recursive\"")
-endif()
-
 FIND_PACKAGE ( Sanitizers )
 FIND_PACKAGE ( Threads )
 
@@ -273,80 +246,6 @@ ELSE ()
   MESSAGE ( SEND_ERROR "Unable to find a way to declare a thread-local variable")
 ENDIF ()
 
-###########################################################################
-# zlib
-
-FIND_PACKAGE ( ZLIB )
-IF(NOT ZLIB_FOUND)
-  # Build zlib
-  SET(ZLIB_BUILD_STATIC_LIBS ON CACHE BOOL " " FORCE)
-  SET(ZLIB_BUILD_SHARED_LIBS OFF CACHE BOOL " " FORCE)
-  ADD_SUBDIRECTORY(src/ext/zlib)
-
-  SET(ZLIB_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/ext/zlib")
-  SET(ZLIB_LIBRARY zlibstatic)
-  SET_PROPERTY(TARGET zlibstatic PROPERTY FOLDER "dependencies")
-  INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR} "${CMAKE_CURRENT_BINARY_DIR}/src/ext/zlib")
-ENDIF()
-INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIRS})
-
-###########################################################################
-# OpenEXR
-
-SET(ILMBASE_NAMESPACE_VERSIONING OFF CACHE BOOL " " FORCE)
-SET(OPENEXR_NAMESPACE_VERSIONING OFF CACHE BOOL " " FORCE)
-SET(OPENEXR_BUILD_SHARED_LIBS    OFF CACHE BOOL " " FORCE)
-SET(ILMBASE_BUILD_SHARED_LIBS    OFF CACHE BOOL " " FORCE)
-
-ADD_SUBDIRECTORY(src/ext/openexr)
-
-SET_PROPERTY(TARGET IexMath eLut toFloat b44ExpLogTable dwaLookups CopyIlmBaseLibs IlmThread Half Iex Imath IlmImf PROPERTY FOLDER "dependencies")
-
-INCLUDE_DIRECTORIES (
-  src/ext/openexr/IlmBase/Imath
-  src/ext/openexr/IlmBase/Half
-  src/ext/openexr/IlmBase/Iex
-  src/ext/openexr/OpenEXR/IlmImf
-  ${CMAKE_BINARY_DIR}/src/ext/openexr/IlmBase/config
-  ${CMAKE_BINARY_DIR}/src/ext/openexr/OpenEXR/config
-)
-IF(WIN32)
-  SET(OPENEXR_LIBS IlmImf Imath Half ${ZLIB_LIBRARY})
-ELSE()
-  SET(OPENEXR_LIBS IlmImf Imath Half)
-ENDIF()
-
-###########################################################################
-# glog
-
-SET(WITH_GFLAGS OFF CACHE BOOL "Use gflags")
-SET(BUILD_SHARED_LIBS OFF CACHE BOOL " " FORCE)
-ADD_SUBDIRECTORY(src/ext/glog)
-SET_PROPERTY(TARGET glog PROPERTY FOLDER "dependencies")
-INCLUDE_DIRECTORIES (
-  src/ext/glog/src
-  ${CMAKE_BINARY_DIR}/src/ext/glog
-)
-
-###########################################################################
-# ptex
-
-# work around https://github.com/wdas/ptex/issues/28
-IF ( CMAKE_BUILD_TYPE )
-  STRING ( TOLOWER ${CMAKE_BUILD_TYPE} LOWER_BUILD_TYPE )
-  SET ( ENV{FLAVOR} ${LOWER_BUILD_TYPE} )
-ENDIF ()
-SET(PTEX_BUILD_SHARED_LIBS OFF CACHE BOOL " " FORCE)
-
-SET(CMAKE_MACOSX_RPATH 1)
-IF ( WIN32 )
-  ADD_DEFINITIONS ( /D PTEX_STATIC)
-ENDIF ()
-ADD_SUBDIRECTORY(src/ext/ptex)
-SET_PROPERTY(TARGET Ptex_static PROPERTY FOLDER "dependencies")
-INCLUDE_DIRECTORIES ( src/ext/ptex/src/ptex )
-
-###########################################################################
 # On to pbrt...
 
 SET ( PBRT_CORE_SOURCE
@@ -435,6 +334,7 @@ SET ( PBRT_CORE_HEADERS
 FILE ( GLOB PBRT_SOURCE
   src/ext/*.c
   src/ext/*.cpp
+  src/ext/miniglog/glog/logging.cc
   src/accelerators/*.cpp
   src/cameras/*.cpp
   src/filters/*.cpp
@@ -449,6 +349,7 @@ FILE ( GLOB PBRT_SOURCE
 
 INCLUDE_DIRECTORIES ( src )
 INCLUDE_DIRECTORIES ( src/core )
+INCLUDE_DIRECTORIES ( src/ext/miniglog )
 
 ###########################################################################
 # pbrt libraries and executables
@@ -482,10 +383,6 @@ ENDIF()
 SET(ALL_PBRT_LIBS
   pbrt
   ${CMAKE_THREAD_LIBS_INIT}
-  ${OPENEXR_LIBS}
-  glog
-  Ptex_static
-  ${ZLIB_LIBRARY}
 )
 
 # Main renderer
