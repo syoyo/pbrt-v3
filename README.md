@@ -1,5 +1,5 @@
-pbrt, Version 3
-===============
+pbrt, Version 3 with no dependency version
+==========================================
 
 [![Build Status](https://travis-ci.org/mmp/pbrt-v3.svg?branch=master)](https://travis-ci.org/mmp/pbrt-v3)
 [![Build status](https://ci.appveyor.com/api/projects/status/mlm9g91ejxlcn67s/branch/master?svg=true)](https://ci.appveyor.com/project/mmp/pbrt-v3/branch/master)
@@ -129,3 +129,5 @@ in the list of configuration variables; set them as desired before choosing
 
 With command-line cmake, their values can be specified when you cmake via
 `-DPBRT_FLOAT_AS_DOUBLE=1`, for example.
+
+`PBRT_USE_TINYEXR` uses TinyEXR for EXR image I/O. TinyEXR should work on various platforms including Android.
