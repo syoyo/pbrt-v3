@@ -75,7 +75,7 @@ Reformatting options:
 // main program
 int main(int argc, char *argv[]) {
     google::InitGoogleLogging(argv[0]);
-    FLAGS_stderrthreshold = 1; // Warning and above.
+    //FLAGS_stderrthreshold = 1; // Warning and above.
 
     Options options;
     std::vector<std::string> filenames;
@@ -103,16 +103,16 @@ int main(int argc, char *argv[]) {
         } else if (!strcmp(argv[i], "--logdir") || !strcmp(argv[i], "-logdir")) {
             if (i + 1 == argc)
                 usage("missing value after --logdir argument");
-            FLAGS_log_dir = argv[++i];
+            //FLAGS_log_dir = argv[++i];
         } else if (!strncmp(argv[i], "--logdir=", 9)) {
-            FLAGS_log_dir = &argv[i][9];
+            //FLAGS_log_dir = &argv[i][9];
         } else if (!strcmp(argv[i], "--minloglevel") ||
                    !strcmp(argv[i], "-minloglevel")) {
             if (i + 1 == argc)
                 usage("missing value after --minloglevel argument");
-            FLAGS_minloglevel = atoi(argv[++i]);
+            //FLAGS_minloglevel = atoi(argv[++i]);
         } else if (!strncmp(argv[i], "--minloglevel=", 14)) {
-            FLAGS_minloglevel = atoi(&argv[i][14]);
+            //FLAGS_minloglevel = atoi(&argv[i][14]);
         } else if (!strcmp(argv[i], "--quick") || !strcmp(argv[i], "-quick")) {
             options.quickRender = true;
         } else if (!strcmp(argv[i], "--quiet") || !strcmp(argv[i], "-quiet")) {
@@ -124,12 +124,12 @@ int main(int argc, char *argv[]) {
         } else if (!strcmp(argv[i], "--v") || !strcmp(argv[i], "-v")) {
             if (i + 1 == argc)
                 usage("missing value after --v argument");
-            FLAGS_v = atoi(argv[++i]);
+            //FLAGS_v = atoi(argv[++i]);
         } else if (!strncmp(argv[i], "--v=", 4)) {
-          FLAGS_v = atoi(argv[i] + 4);
+          //FLAGS_v = atoi(argv[i] + 4);
         }
         else if (!strcmp(argv[i], "--logtostderr")) {
-          FLAGS_logtostderr = true;
+          //FLAGS_logtostderr = true;
         } else if (!strcmp(argv[i], "--help") || !strcmp(argv[i], "-help") ||
                    !strcmp(argv[i], "-h")) {
             usage();
