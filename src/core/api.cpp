@@ -54,6 +54,7 @@
 #include "filters/triangle.h"
 #include "integrators/bdpt.h"
 #include "integrators/directlighting.h"
+#include "integrators/hair-aov.h"
 #include "integrators/mlt.h"
 #include "integrators/ao.h"
 #include "integrators/path.h"
@@ -1695,6 +1696,9 @@ Integrator *RenderOptions::MakeIntegrator() const {
         integrator = CreateAOIntegrator(IntegratorParams, sampler, camera);
     } else if (IntegratorName == "sppm") {
         integrator = CreateSPPMIntegrator(IntegratorParams, camera);
+    } else if (IntegratorName == "hair-aov") {
+        integrator =
+            CreateHairAOVIntegrator(IntegratorParams, sampler, camera);
     } else {
         Error("Integrator \"%s\" unknown.", IntegratorName.c_str());
         return nullptr;
