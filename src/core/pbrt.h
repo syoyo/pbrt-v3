@@ -58,7 +58,7 @@
 #endif
 #include <assert.h>
 #include <string.h>
-#include <glog/logging.h>
+#include "glog/logging.h"
 
 // Platform-specific definitions
 #if defined(_WIN32) || defined(_WIN64)
@@ -83,6 +83,8 @@
 #pragma warning(disable : 4305)  // double constant assigned to float
 #pragma warning(disable : 4244)  // int -> float conversion
 #pragma warning(disable : 4843)  // double -> float conversion
+#pragma warning(disable : 4267)  // size_t -> int
+#pragma warning(disable : 4838)  // another double -> int
 #endif
 
 // Global Macros
@@ -121,8 +123,11 @@ template <int nSpectrumSamples>
 class CoefficientSpectrum;
 class RGBSpectrum;
 class SampledSpectrum;
-typedef RGBSpectrum Spectrum;
-// typedef SampledSpectrum Spectrum;
+#ifdef PBRT_SAMPLED_SPECTRUM
+  typedef SampledSpectrum Spectrum;
+#else
+  typedef RGBSpectrum Spectrum;
+#endif
 class Camera;
 struct CameraSample;
 class ProjectiveCamera;
@@ -149,11 +154,10 @@ class VisibilityTester;
 class AreaLight;
 struct Distribution1D;
 class Distribution2D;
-//#define PBRT_FLOAT_AS_DOUBLE
 #ifdef PBRT_FLOAT_AS_DOUBLE
-typedef double Float;
+  typedef double Float;
 #else
-typedef float Float;
+  typedef float Float;
 #endif  // PBRT_FLOAT_AS_DOUBLE
 class RNG;
 class ProgressReporter;

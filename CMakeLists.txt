@@ -9,6 +9,24 @@ SET (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 PROJECT ( PBRT-V3 )
 
+OPTION(PBRT_FLOAT_AS_DOUBLE "Use 64-bit floats" OFF)
+
+IF (PBRT_FLOAT_AS_DOUBLE)
+  ADD_DEFINITIONS ( -D PBRT_FLOAT_AS_DOUBLE )
+ENDIF()
+
+OPTION(PBRT_SAMPLED_SPECTRUM "Use SampledSpectrum rather than RGBSpectrum" OFF)
+
+IF (PBRT_SAMPLED_SPECTRUM)
+  ADD_DEFINITIONS ( -D PBRT_SAMPLED_SPECTRUM )
+ENDIF()
+
+OPTION(PBRT_USE_TINYEXR "Use TinyEXR" ON)
+
+IF (PBRT_USE_TINYEXR)
+  ADD_DEFINITIONS ( -D PBRT_USE_TINYEXR )
+ENDIF()
+
 ENABLE_TESTING()
 
 if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
@@ -24,6 +42,8 @@ FIND_PACKAGE ( Threads )
 IF(CMAKE_BUILD_TYPE MATCHES RELEASE)
   ADD_DEFINITIONS (-DNDEBUG)
 ENDIF()
+
+SET_PROPERTY(GLOBAL PROPERTY USE_FOLDERS ON)
 
 ###########################################################################
 # Annoying compiler-specific details
@@ -334,7 +354,7 @@ SET ( PBRT_CORE_HEADERS
 FILE ( GLOB PBRT_SOURCE
   src/ext/*.c
   src/ext/*.cpp
-  src/ext/miniglog/glog/logging.cc
+  src/ext/miniglog/glog/*.cc
   src/accelerators/*.cpp
   src/cameras/*.cpp
   src/filters/*.cpp
