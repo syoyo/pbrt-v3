@@ -214,11 +214,17 @@ static void WriteImageEXR(const std::string &name, const Float *pixels,
         rgba[3 * i + 2] = pixels[3 * i + 2];
     }
 
+    const char *err;
     // TODO(syoyo): Support data offset.
     int ret = SaveEXR(rgba.data(), xRes, yRes, /* channels */ 3,
-                      /* save as fp16 */ 1, name.c_str());
+                      /* save as fp16 */ 1, name.c_str(), &err);
     if (ret != TINYEXR_SUCCESS) {
-        Error("Error writing \"%s\"", name.c_str());
+        if (err) {
+            Error("Error writing \"%s\". %s(code = %d)", name.c_str(), err, ret);
+            FreeEXRErrorMessage(err);
+        } else { 
+            Error("Error writing \"%s\"", name.c_str());
+        }
     }
 
 #elif defined(USE_OPENEXR)
