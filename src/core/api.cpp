@@ -289,8 +289,8 @@ class TransformCache {
 
     void Clear() {
         transformCacheBytes += arena.TotalAllocated() + hashTable.size() * sizeof(Transform *);
-        hashTable.resize(512);
         hashTable.clear();
+        hashTable.resize(512);
         hashTableOccupancy = 0;
         arena.Reset();
     }
